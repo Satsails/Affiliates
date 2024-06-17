@@ -19,9 +19,10 @@ jobs:
           java-version: '11'
       - uses: subosito/flutter-action@v1
         with:
-          flutter-version: '3.22.2 '
+          flutter-version: '3.22.2'
       - run: flutter pub get
       - run: flutter build web
+      - run: mv build/web/* public/
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
