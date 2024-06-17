@@ -69,6 +69,10 @@ class _HomePageState extends State<HomePage> {
           const SnackBar(content: Text('Options saved successfully')),
         );
         context.go('/home');
+
+        setState(() {
+          _loadUserOptions();
+        });
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
