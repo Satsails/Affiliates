@@ -17,7 +17,6 @@ jobs:
           flutter-version: '3.22.2'
       - run: flutter pub get
       - run: flutter build web
-      - run: mv build/web/* public/
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
