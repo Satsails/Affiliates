@@ -58,7 +58,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            context.go('/');
+            context.go('/login');
           },
         ),
       ),

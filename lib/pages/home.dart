@@ -25,18 +25,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadUserOptions() async {
-    String uid = FirebaseAuth.instance.currentUser!.uid;
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      String uid = user.uid;
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
-    if (userDoc.exists) {
-      Map<String, dynamic>? data = userDoc.data() as Map<String, dynamic>?;
-      if (data != null) {
-        _addressController.text = data['address'] ?? '';
-        _sats = data['sats'] ?? 0;
-        _referralId = data['referralId'] ?? '';
-        _isReferralIdSet = _referralId.isNotEmpty;
+      if (userDoc.exists) {
+        Map<String, dynamic>? data = userDoc.data() as Map<String, dynamic>?;
+        if (data != null) {
+          _addressController.text = data['address'] ?? '';
+          _sats = data['sats'] ?? 0;
+          _referralId = data['referralId'] ?? '';
+          _isReferralIdSet = _referralId.isNotEmpty;
+        }
+        setState(() {});
       }
-      setState(() {});
+    } else {
+      context.go('/login');
     }
   }
 
@@ -68,11 +73,12 @@ class _HomePageState extends State<HomePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Options saved successfully')),
         );
-        context.go('/home');
 
         setState(() {
           _loadUserOptions();
         });
+
+        context.go('/home');  // Ensure correct navigation after saving
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -96,23 +102,6 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
-                'Amount due to receive: $_sats',
-                style: const TextStyle(fontSize: 16.0),
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                controller: _addressController,
-                decoration: const InputDecoration(
-                  labelText: 'Registered Liquid Address:',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your address';
-                  }
-                  return null;
-                },
-              ),
               const SizedBox(height: 16.0),
               if (_isReferralIdSet)
                 Text(
@@ -133,6 +122,23 @@ class _HomePageState extends State<HomePage> {
                     return null;
                   },
                 ),
+              Text(
+                'Amount due to receive: $_sats',
+                style: const TextStyle(fontSize: 16.0),
+              ),
+              const SizedBox(height: 16.0),
+              TextFormField(
+                controller: _addressController,
+                decoration: const InputDecoration(
+                  labelText: 'Registered Liquid Address to receive payments:',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your address';
+                  }
+                  return null;
+                },
+              ),
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _saveUserOptions,
